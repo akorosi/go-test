@@ -1,0 +1,78 @@
+receivers:
+  hostmetrics:
+    # root_path is only needed if running the collector in a docker container. Make sure to bind your host volume to `/host`
+    root_path: /host
+    collection_interval: 15s
+    scrapers:
+      cpu:
+        metrics:
+          system.cpu.utilization:
+            enabled: true
+          system.cpu.physical.count:
+            enabled: true
+          system.cpu.logical.count:
+            enabled: true
+          system.cpu.frequency:
+            enabled: true
+      memory:
+        metrics:
+            system.memory.utilization:
+              enabled: true
+      disk:
+      network:
+      paging:
+        metrics:
+          system.paging.utilization:
+            enabled:true
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+  prometheus/static:
+    trim_metric_suffixes: true
+    use_start_time_metric: false
+    config:
+      scrape_configs:
+        - job_name: "otelcol"
+          scrape_interval: "15s"
+          metrics_path: "/metrics"
+          static_configs:
+            - targets: ['0.0.0.0:8888']
+
+processors:
+  batch:
+  resouredetection/env:
+    # if using docker, bind-mount /var/run/docker.sock into your container
+    detectors: [env, docker, system]
+  resource:
+    attributes:
+    - key: service.name
+      value: "%SERVICE_NAME%"
+      action: insert
+  memory_limiter:
+    check_interval: 1s
+    limit_percentage: 95
+    spike_limit_percentage: 40
+
+exporters:
+  debug:
+    verbosity: basic
+  otlp:
+    endpoint: %OTEL_ENDPOINT%
+
+service:
+  metrics:
+    receivers: [otlp, hostmetrics, prometheus/static]
+    processors: [memory_limiter, batch, resourcedetection/env, resource]
+    exporters: [otlp, debug]
+  traces:
+    receivers: [otlp]
+    processors: [memory_limiter, batch, resourcedetection/env, resource]
+    exporters: [otlp, debug]
+  logs:
+    receivers: [otlp]
+    processors: [memory_limiter, batch, resourcedetection/env, resource]
+    exporters: [otlp, debug]

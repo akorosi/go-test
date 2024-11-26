@@ -1,0 +1,37 @@
+{
+    "gateways": [
+        {
+            "url": "http://collector-otel-gw-tristol.narancsmag.hu:4318",
+            "dc_name": "tristol",
+            "environment": "sandbox",
+            "cidr_range" : [
+                "11.17.0.0/18",
+                "19.2.2.0/24",
+                "4.6.2.0/24",
+                "19.1.1.0/24"
+            ]
+        },
+        {
+            "url": "http://collector-otel-gw-dia.narancsmag.hu:4318",
+            "dc_name": "dia",
+            "environment": "sandbox",
+            "cidr_range" : [
+                "20.1.15.0/23",
+                "1.17.0.0/18",
+                "20.9.15.0/23",
+                "19.20.5.0/23"
+            ]
+        },
+        {
+            "url": "http://collector-otel-gw-sal.narancsmag.hu:4318",
+            "dc_name": "sal",
+            "environment": "sandbox",
+            "cidr_range" : [
+                "8.2.11.0/23",
+                "1.6.1.0/24",
+                "1.1.0.0/18",
+                "2.2.16.0/24"
+            ]
+        }
+    ]
+}
